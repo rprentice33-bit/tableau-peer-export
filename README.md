@@ -1,6 +1,6 @@
 # Tableau Peer Comparison PDF Export Extension
 
-This dashboard extension adds a one-click PDF download button to a Tableau dashboard. It creates a polished, paginated PDF table from the **formatted summary data** in a configured worksheet, using that worksheet's current Tableau filters and parameters.
+This dashboard extension adds a one-click PDF download button to a Tableau dashboard. It creates a focused, paginated peer-comparison PDF table from the **formatted summary data** in a configured worksheet, using that worksheet's current Tableau filters and parameters.
 
 The PDF is created locally in the viewer's browser. Worksheet data is not sent to another service.
 
@@ -21,6 +21,21 @@ The PDF is created locally in the viewer's browser. Worksheet data is not sent t
 - IHA-style teal and navy accents
 - Automatic column sizing and wrapped text
 - Page numbers, worksheet name, and generation timestamp
+
+## Exported fields
+
+The PDF includes only these fields, in this order:
+
+1. `index_facility` as `facility`
+2. `valid index records` as `denominator`
+3. `readmissions` as `numerator`
+4. `readmission_rate` as `readmission rate`
+5. `peer group readmission rate` as `peer group rate`
+6. Readmission-rate difference versus peer group as `vs peer`, formatted with a sign and `pp`
+7. Absolute estimated readmission variance plus its excess/avoided/difference label as `est variance`
+8. `peer rank`
+
+The value from `selected period rates label` appears as the PDF subtitle. All other worksheet fields are ignored.
 
 ## 1. Prepare the Tableau worksheet
 
