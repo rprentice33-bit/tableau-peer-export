@@ -4,11 +4,12 @@
     <default-locale>en_US</default-locale>
     <name resource-id="name"/>
     <description>Creates a paginated PDF from the currently filtered summary data in a configured dashboard worksheet.</description>
-    <author name="Indiana Hospital Association" organization="Indiana Hospital Association" website="https://www.ihaconnect.org"/>
+    <author name="Indiana Hospital Association" email="YOUR-EMAIL@ihaconnect.org" organization="Indiana Hospital Association" website="https://www.ihaconnect.org"/>
     <min-api-version>1.10</min-api-version>
     <source-location>
-      <url>https://rprentice33-bit.github.io/tableau-peer-export/index.html</url>
+      <url>https://YOUR-HTTPS-HOST/tableau-peer-export/index.html</url>
     </source-location>
+    <icon>iVBORw0KGgoAAAANSUhEUgAAAEYAAABGCAYAAABxLuKEAAAAAklEQVR4AewaftIAAALiSURBVO3B0Y3jIBRA0fvQfkCFUABUBQVAhfDHzkqz0gg5mSQ2jpP4HE4vQOfYOQhhRzrHzkrNBWEHwmQ6x84kzQVhEmESnWNnJ80FYWPChnSOnSdrLggbEDaic+wcRHNBWElYSefYOajmgvAgYQWdY+fgmgvCA4QH6Rw7L6K5INxJuJPOsfOimgvCjYQ76Bw7L665INxAuJHOsfMmmgvCLxSnRcINdI6dN9NcEK4QfqFz7ExUrecSUxIzNReECxRX6Bw7b0zn2LlAcVqkuEDn2PkAOsfOAsUCnWPng+gcOwPFaZHitEgx0Dl2PpDOsfOD4rRI8YPOsfPBdI6db4rTIsVpkeKbzrFzQufY+aI4LVKcFilOixQbq9bzDNV6tqSYoFrPnqr1bE0xSbWePVTrmUExUbWemar1zKL4onPsTFKtZ4ZqPbPoHLviS3NB2IgpiVG1ni1V6xmZkthKc0EUE5iSGFXr2UK1npEpia0pJjElMarWs0a1npEpiRkUE5mSGFXreUS1npEpiVkUk5mSGFXruUe1npEpiZkUOzAlMarWc4tqPSNTErMpdmJKYlSt55pqPSNTEnv4w45MSVTrGZmSGFXrGZmS2Ivwg86xs4NqPSNTEv9V6xmZkthDc0H4ongCUxKjaj3/VOsZmZLYm+JJTEmMqvWMTEk8gzDQOXZ2VK3nElMSe2ouCN8UT2ZKYokpiWcSFugcOzur1vOfKYm9NReEHxQHYUriH1MSR6A4EFMSRyFcoHPsfIjmgjAQrtA5dt5cc0FY8IeNVOs5ClMSaymuaC4Ib6y5IFyg+EVzQXhDzQXhCsUNmgvCG2kuCL9QnBYpbtRcEN5Ac0G4gXAnnWPnRTUXhBsJD9I5dl5Ec0G4k7CCzrFzcM0F4QHCSjrHzkE1F4QHCRvROXYOorkgrCRsSOfYebLmgrABYRKdY2cnzQVhY8JkOsfOJM0FYRJhRzrHzkrNBeHT6Bw7B/EX5nQHUdbFF+0AAAAASUVORK5CYII=</icon>
     <context-menu>
       <configure-context-menu-item/>
     </context-menu>

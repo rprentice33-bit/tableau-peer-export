@@ -55,6 +55,14 @@ Edit this line in `peer-comparison-export.trex`:
 
 Replace it with the actual hosted `index.html` URL.
 
+Also replace the placeholder author email in the manifest:
+
+```xml
+email="YOUR-EMAIL@ihaconnect.org"
+```
+
+The manifest includes the required embedded 70 x 70 PNG icon.
+
 For local testing only, Tableau permits localhost:
 
 ```xml
