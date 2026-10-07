@@ -4,7 +4,7 @@
     <default-locale>en_US</default-locale>
     <name resource-id="name"/>
     <description>Creates a paginated PDF from the currently filtered summary data in a configured dashboard worksheet.</description>
-    <author name="Indiana Hospital Association" email="YOUR-EMAIL@ihaconnect.org" organization="Indiana Hospital Association" website="https://www.ihaconnect.org"/>
+    <author name="Indiana Hospital Association" email="noreply-datalink@ihaconnect.org" organization="Indiana Hospital Association" website="https://www.ihaconnect.org"/>
     <min-api-version>1.10</min-api-version>
     <source-location>
       <url>https://rprentice33-bit.github.io/tableau-peer-export/index.html</url>
