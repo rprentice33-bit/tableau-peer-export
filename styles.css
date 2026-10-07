@@ -19,8 +19,8 @@ body {
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background: transparent !important;
-  background-color: transparent !important;
+  background: #fffdf5 !important;
+  background-color: #fffdf5 !important;
   font-family: "Open Sans", Arial, sans-serif;
 }
 
@@ -32,8 +32,8 @@ body {
   align-items: center;
   gap: 8px;
   padding: 2px;
-  background: transparent !important;
-  background-color: transparent !important;
+  background: #fffdf5 !important;
+  background-color: #fffdf5 !important;
 }
 
 .download-button {
