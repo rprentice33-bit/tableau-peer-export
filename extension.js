@@ -160,7 +160,7 @@
   }
 
   function buildPeerExportTable(sourceHeaders, sourceRows) {
-    const fields = locatePeerExportFields(sourceHeaders);
+    const fields = locatePeerExportFields(sourceHeaders, sourceRows);
     const required = [
       'facility', 'denominator', 'numerator', 'readmissionRate', 'peerGroupRate',
       'vsPeer', 'varianceAmount', 'varianceLabel', 'peerRank', 'subtitle'
@@ -203,9 +203,21 @@
     };
   }
 
-  function locatePeerExportFields(headers) {
+  function locatePeerExportFields(headers, rows) {
     const normalized = headers.map(normalizeFieldName);
     const find = predicate => normalized.findIndex(predicate);
+
+    let varianceLabel = find(value =>
+      value === 'estimatedvariancelabel' ||
+      value === 'variancelabel' ||
+      (value.includes('estimatedreadmissionvar') && value.includes('label')) ||
+      (value.includes('estimatedreadmissionvar') &&
+        value.includes('excess') && value.includes('avoided') && value.includes('difference'))
+    );
+
+    if (varianceLabel === -1) {
+      varianceLabel = findColumnByAllowedValues(rows, ['excess', 'avoided', 'difference']);
+    }
 
     return {
       facility: find(value => value === 'indexfacility' || value === 'facility'),
@@ -224,16 +236,27 @@
         value === 'estimatedreadmissionvar' ||
         value === 'estimatedvarianceamount'
       ),
-      varianceLabel: find(value =>
-        value === 'estimatedvariancelabel' ||
-        value === 'variancelabel' ||
-        (value.includes('estimatedreadmissionvar') && value.includes('label')) ||
-        (value.includes('estimatedreadmissionvar') &&
-          value.includes('excess') && value.includes('avoided') && value.includes('difference'))
-      ),
+      varianceLabel,
       peerRank: find(value => value === 'peerrank'),
       subtitle: find(value => value.includes('selectedperiodrateslabel'))
     };
+  }
+
+  function findColumnByAllowedValues(rows, allowedValues) {
+    if (!rows.length) return -1;
+    const allowed = new Set(allowedValues.map(value => value.toLowerCase()));
+    const columnCount = Math.max(...rows.map(row => row.length));
+
+    for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+      const values = rows
+        .map(row => cleanText(row[columnIndex]).trim().toLowerCase())
+        .filter(Boolean);
+
+      if (values.length > 0 && values.every(value => allowed.has(value))) {
+        return columnIndex;
+      }
+    }
+    return -1;
   }
 
   function normalizeFieldName(value) {
