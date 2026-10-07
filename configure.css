@@ -1,0 +1,106 @@
+:root {
+  --teal: #08a89b;
+  --teal-dark: #07877d;
+  --navy: #0b1b33;
+  --muted: #666b69;
+  --border: #c9ccca;
+  --error: #c94f32;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--navy);
+  background: #fff;
+  font-family: "Tableau Book", "Segoe UI", Arial, sans-serif;
+}
+
+main {
+  padding: 22px 24px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.intro {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+input,
+select {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--teal);
+  outline: 2px solid rgba(8, 168, 155, 0.2);
+}
+
+.message {
+  min-height: 18px;
+  margin: 4px 0 0;
+  color: var(--error);
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+button {
+  min-width: 90px;
+  height: 34px;
+  border-radius: 17px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 16px;
+}
+
+.primary {
+  border: 1px solid var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+.primary:hover {
+  border-color: var(--teal-dark);
+  background: var(--teal-dark);
+}
+
+.secondary {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--navy);
+}

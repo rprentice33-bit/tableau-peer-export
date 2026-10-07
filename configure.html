@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configure Peer Comparison Export</title>
+  <link rel="stylesheet" href="configure.css">
+</head>
+<body>
+  <main>
+    <h1>Configure download button</h1>
+    <p class="intro">Choose the worksheet containing the complete export table. Dashboard filters applied to that worksheet will be reflected in the PDF.</p>
+
+    <form id="configurationForm">
+      <label for="worksheetName">Export worksheet</label>
+      <select id="worksheetName" required></select>
+
+      <label for="buttonText">Button text</label>
+      <input id="buttonText" type="text" maxlength="80" value="Download Full Peer Comparison">
+
+      <label for="pdfTitle">PDF title</label>
+      <input id="pdfTitle" type="text" maxlength="120" value="Full Peer Comparison">
+
+      <label for="fileName">Downloaded filename</label>
+      <input id="fileName" type="text" maxlength="120" value="Full Peer Comparison.pdf">
+
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+
+      <div class="actions">
+        <button id="cancelButton" class="secondary" type="button">Cancel</button>
+        <button class="primary" type="submit">Save</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="https://extensions.tableauusercontent.com/resources/tableau.extensions.1.latest.min.js"></script>
+  <script src="configure.js"></script>
+</body>
+</html>
