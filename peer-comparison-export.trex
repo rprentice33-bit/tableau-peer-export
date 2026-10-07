@@ -7,7 +7,7 @@
     <author name="Indiana Hospital Association" organization="Indiana Hospital Association" website="https://www.ihaconnect.org"/>
     <min-api-version>1.10</min-api-version>
     <source-location>
-      <url>https://YOUR-HTTPS-HOST/tableau-peer-export/index.html</url>
+      <url>https://rprentice33-bit.github.io/tableau-peer-export/index.html</url>
     </source-location>
     <context-menu>
       <configure-context-menu-item/>
