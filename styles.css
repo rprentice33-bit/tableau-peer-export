@@ -19,8 +19,9 @@ body {
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background: transparent;
-  font-family: "Tableau Book", "Segoe UI", Arial, sans-serif;
+  background: transparent !important;
+  background-color: transparent !important;
+  font-family: "Open Sans", Arial, sans-serif;
 }
 
 .extension-shell {
@@ -31,6 +32,8 @@ body {
   align-items: center;
   gap: 8px;
   padding: 2px;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 .download-button {
@@ -39,13 +42,13 @@ body {
   height: 34px;
   align-items: center;
   justify-content: center;
-  gap: 7px;
   border: 1px solid var(--teal);
   border-radius: 17px;
   background: var(--teal);
   color: #fff;
   cursor: pointer;
-  font-size: 12px;
+  font-family: "Open Sans", Arial, sans-serif;
+  font-size: 10pt;
   font-weight: 700;
   line-height: 1;
   padding: 0 16px;
@@ -65,11 +68,6 @@ body {
 .download-button:disabled {
   cursor: default;
   opacity: 0.55;
-}
-
-.download-icon {
-  font-size: 16px;
-  line-height: 1;
 }
 
 .status {
