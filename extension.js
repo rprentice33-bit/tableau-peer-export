@@ -18,7 +18,6 @@
     { key: 'denominator', label: 'denominator', weight: 1.15 },
     { key: 'numerator', label: 'numerator', weight: 1.0 },
     { key: 'readmissionRate', label: 'readmission rate', weight: 1.25 },
-    { key: 'peerGroupRate', label: 'peer group rate', weight: 1.25 },
     { key: 'vsPeer', label: 'vs peer', weight: 0.9 },
     { key: 'variance', label: 'est variance', weight: 1.15 },
     { key: 'peerRank', label: 'peer rank', weight: 0.85 }
