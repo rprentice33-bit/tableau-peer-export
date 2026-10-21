@@ -20,7 +20,7 @@ The PDF is created locally in the viewer's browser. Worksheet data is not sent t
 - Alternating light table rows
 - Selected-facility rows highlighted in pale green with a teal accent
 - Facilities sorted from lowest to highest readmission rate
-- Peer-group and statewide benchmark rows inserted at their rate positions
+- A centered statewide benchmark row inserted at its rate position
 - IHA-style teal and navy accents
 - Automatic column sizing and wrapped text
 - Page numbers, worksheet name, and generation timestamp
@@ -45,7 +45,7 @@ The worksheet must also include these fields on **Detail** (they are used for fo
 - `index_facility set`, to identify selected facilities
 - `statewide readmission rate`, to position the statewide benchmark row
 
-If the filtered data contains multiple distinct peer-group rates, the PDF inserts one peer benchmark row for each rate.
+The peer-group rate remains an exported table column; it is not inserted as a benchmark row.
 
 ## 1. Prepare the Tableau worksheet
 

@@ -214,12 +214,10 @@
       return rateOrder || left.values[0].localeCompare(right.values[0]);
     });
 
-    const peerBenchmarks = collectBenchmarkValues(sourceRows, fields.peerGroupRate)
-      .map(benchmark => ({ ...benchmark, type: 'benchmark', kind: 'peer', label: 'Peer group rate' }));
     const statewideBenchmarks = collectBenchmarkValues(sourceRows, fields.statewideRate)
-      .map(benchmark => ({ ...benchmark, type: 'benchmark', kind: 'state', label: 'Statewide rate' }));
+      .map(benchmark => ({ ...benchmark, type: 'benchmark', kind: 'state', label: 'STATEWIDE RATE' }));
 
-    const rows = mergeDataAndBenchmarks(dataRows, [...peerBenchmarks, ...statewideBenchmarks]);
+    const rows = mergeDataAndBenchmarks(dataRows, statewideBenchmarks);
 
     return {
       subtitle,
@@ -309,16 +307,13 @@
   }
 
   function mergeDataAndBenchmarks(dataRows, benchmarks) {
-    const benchmarkOrder = { peer: 0, state: 1 };
     return [...dataRows, ...benchmarks].sort((left, right) => {
       const rateOrder = compareNumbers(left.rateValue, right.rateValue);
       if (rateOrder) return rateOrder;
 
       // Put a benchmark immediately before facilities at exactly the benchmark rate.
       if (left.type !== right.type) return left.type === 'benchmark' ? -1 : 1;
-      if (left.type === 'benchmark') {
-        return benchmarkOrder[left.kind] - benchmarkOrder[right.kind];
-      }
+      if (left.type === 'benchmark') return left.label.localeCompare(right.label);
       return left.values[0].localeCompare(right.values[0]);
     });
   }
@@ -383,7 +378,6 @@
       cream: rgb(251 / 255, 248 / 255, 238 / 255),
       alternate: rgb(245 / 255, 247 / 255, 245 / 255),
       selected: rgb(224 / 255, 243 / 255, 236 / 255),
-      peerMarker: rgb(244 / 255, 232 / 255, 213 / 255),
       stateMarker: rgb(224 / 255, 237 / 255, 242 / 255),
       grid: rgb(213 / 255, 216 / 255, 213 / 255),
       muted: rgb(102 / 255, 107 / 255, 105 / 255),
@@ -501,9 +495,10 @@
 
     function drawBenchmarkRow(benchmark) {
       const rowHeight = 18;
-      const fillColor = benchmark.kind === 'state' ? palette.stateMarker : palette.peerMarker;
-      const lineColor = benchmark.kind === 'state' ? palette.navy : palette.teal;
+      const fillColor = palette.stateMarker;
+      const lineColor = palette.navy;
       const label = `${benchmark.label}  |  ${benchmark.displayValue}`;
+      const labelWidth = boldFont.widthOfTextAtSize(label, 7.2);
 
       page.drawRectangle({
         x: PAGE.marginX,
@@ -525,7 +520,7 @@
         color: lineColor
       });
       page.drawText(label, {
-        x: PAGE.marginX + 6,
+        x: PAGE.marginX + ((contentWidth - labelWidth) / 2),
         y: y - 12,
         size: 7.2,
         font: boldFont,
