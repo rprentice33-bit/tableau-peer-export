@@ -33,10 +33,9 @@ The PDF includes only these fields, in this order:
 2. `valid index records` as `denominator`
 3. `readmissions` as `numerator`
 4. `readmission_rate` as `readmission rate`
-5. `peer group readmission rate` as `peer group rate`
-6. Readmission-rate difference versus peer group as `vs peer`, formatted with a sign and `pp`
-7. Absolute estimated readmission variance plus its excess/avoided/difference label as `est variance`
-8. `peer rank`
+5. Readmission-rate difference versus peer group as `vs peer`, formatted with a sign and `pp`
+6. Absolute estimated readmission variance plus its excess/avoided/difference label as `est variance`
+7. `peer rank`
 
 The value from `selected period rates label` appears as the PDF subtitle. All other worksheet fields are ignored.
 
@@ -45,7 +44,7 @@ The worksheet must also include these fields on **Detail** (they are used for fo
 - `index_facility set`, to identify selected facilities
 - `statewide readmission rate`, to position the statewide benchmark row
 
-The peer-group rate remains an exported table column; it is not inserted as a benchmark row.
+The peer-group rate is used by the Tableau `vs peer` calculation but is not exported as a separate column or benchmark row.
 
 ## 1. Prepare the Tableau worksheet
 

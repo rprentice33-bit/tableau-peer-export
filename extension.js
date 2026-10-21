@@ -161,8 +161,8 @@
   function buildPeerExportTable(sourceHeaders, sourceRows) {
     const fields = locatePeerExportFields(sourceHeaders, sourceRows);
     const required = [
-      'facility', 'denominator', 'numerator', 'readmissionRate', 'peerGroupRate',
-      'statewideRate', 'selectedFacility', 'vsPeer', 'varianceAmount',
+      'facility', 'denominator', 'numerator', 'readmissionRate', 'statewideRate',
+      'selectedFacility', 'vsPeer', 'varianceAmount',
       'varianceLabel', 'peerRank', 'subtitle'
     ];
     const missing = required.filter(key => fields[key] === -1);
@@ -173,7 +173,6 @@
         denominator: 'valid index records',
         numerator: 'readmissions',
         readmissionRate: 'readmission_rate',
-        peerGroupRate: 'peer group readmission rate',
         statewideRate: 'statewide readmission rate',
         selectedFacility: 'index_facility set',
         vsPeer: 'vs peer calculation',
@@ -200,7 +199,6 @@
           cleanText(row[fields.denominator]),
           cleanText(row[fields.numerator]),
           rateText,
-          cleanText(row[fields.peerGroupRate]),
           formatVsPeer(row[fields.vsPeer]),
           combineVariance(row[fields.varianceAmount], row[fields.varianceLabel]),
           cleanText(row[fields.peerRank])
