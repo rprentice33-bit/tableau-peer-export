@@ -135,7 +135,7 @@
       if (headers.length === 0) throw new Error('The worksheet returned no columns.');
 
       const exportTable = buildPeerExportTable(headers, rows);
-      showStatus(`Creating PDF… ${exportTable.rows.length.toLocaleString()} rows`);
+      showStatus(`Creating PDF… ${exportTable.dataRowCount.toLocaleString()} facilities`);
       const pdfBytes = await createTablePdf({
         title: settings.get(SETTINGS.pdfTitle) || DEFAULT_PDF_TITLE,
         subtitle: exportTable.subtitle,
@@ -144,7 +144,7 @@
       });
 
       downloadBlob(pdfBytes, normalizeFileName(settings.get(SETTINGS.fileName)));
-      showStatus(`Downloaded ${exportTable.rows.length.toLocaleString()} rows as PDF`);
+      showStatus(`Downloaded ${exportTable.dataRowCount.toLocaleString()} facilities as PDF`);
     } catch (error) {
       showError('The worksheet PDF could not be created.', error);
     } finally {
@@ -163,7 +163,8 @@
     const fields = locatePeerExportFields(sourceHeaders, sourceRows);
     const required = [
       'facility', 'denominator', 'numerator', 'readmissionRate', 'peerGroupRate',
-      'vsPeer', 'varianceAmount', 'varianceLabel', 'peerRank', 'subtitle'
+      'statewideRate', 'selectedFacility', 'vsPeer', 'varianceAmount',
+      'varianceLabel', 'peerRank', 'subtitle'
     ];
     const missing = required.filter(key => fields[key] === -1);
 
@@ -174,6 +175,8 @@
         numerator: 'readmissions',
         readmissionRate: 'readmission_rate',
         peerGroupRate: 'peer group readmission rate',
+        statewideRate: 'statewide readmission rate',
+        selectedFacility: 'index_facility set',
         vsPeer: 'vs peer calculation',
         varianceAmount: 'ABS(estimated readmission var)',
         varianceLabel: 'estimated variance label',
@@ -187,19 +190,42 @@
       .map(row => cleanText(row[fields.subtitle]).trim())
       .find(Boolean) || '';
 
+    const dataRows = sourceRows.map(row => {
+      const rateText = cleanText(row[fields.readmissionRate]);
+      return {
+        type: 'data',
+        selected: isSelectedSetMember(row[fields.selectedFacility]),
+        rateValue: parseNumber(rateText),
+        values: [
+          cleanText(row[fields.facility]),
+          cleanText(row[fields.denominator]),
+          cleanText(row[fields.numerator]),
+          rateText,
+          cleanText(row[fields.peerGroupRate]),
+          formatVsPeer(row[fields.vsPeer]),
+          combineVariance(row[fields.varianceAmount], row[fields.varianceLabel]),
+          cleanText(row[fields.peerRank])
+        ]
+      };
+    });
+
+    dataRows.sort((left, right) => {
+      const rateOrder = compareNumbers(left.rateValue, right.rateValue);
+      return rateOrder || left.values[0].localeCompare(right.values[0]);
+    });
+
+    const peerBenchmarks = collectBenchmarkValues(sourceRows, fields.peerGroupRate)
+      .map(benchmark => ({ ...benchmark, type: 'benchmark', kind: 'peer', label: 'Peer group rate' }));
+    const statewideBenchmarks = collectBenchmarkValues(sourceRows, fields.statewideRate)
+      .map(benchmark => ({ ...benchmark, type: 'benchmark', kind: 'state', label: 'Statewide rate' }));
+
+    const rows = mergeDataAndBenchmarks(dataRows, [...peerBenchmarks, ...statewideBenchmarks]);
+
     return {
       subtitle,
       headers: PEER_EXPORT_COLUMNS.map(column => column.label),
-      rows: sourceRows.map(row => [
-        cleanText(row[fields.facility]),
-        cleanText(row[fields.denominator]),
-        cleanText(row[fields.numerator]),
-        cleanText(row[fields.readmissionRate]),
-        cleanText(row[fields.peerGroupRate]),
-        formatVsPeer(row[fields.vsPeer]),
-        combineVariance(row[fields.varianceAmount], row[fields.varianceLabel]),
-        cleanText(row[fields.peerRank])
-      ])
+      rows,
+      dataRowCount: dataRows.length
     };
   }
 
@@ -224,7 +250,16 @@
       denominator: find(value => value.includes('validindexrecords') || value === 'denominator'),
       numerator: find(value => value === 'readmissions' || value === 'numerator'),
       peerGroupRate: find(value => value.includes('peergroupreadmissionrate') || value === 'peergrouprate'),
+      statewideRate: find(value =>
+        value === 'statewidereadmissionrate' ||
+        value === 'statewiderate' ||
+        value === 'statereadmissionrate'
+      ),
       readmissionRate: find(value => value === 'readmissionrate'),
+      selectedFacility: find(value =>
+        value === 'indexfacilityset' ||
+        (value.includes('indexfacility') && value.endsWith('set'))
+      ),
       vsPeer: find(value =>
         value === 'vspeer' ||
         value === 'rategap' ||
@@ -240,6 +275,52 @@
       peerRank: find(value => value === 'peerrank'),
       subtitle: find(value => value.includes('selectedperiodrateslabel'))
     };
+  }
+
+  function parseNumber(value) {
+    const text = cleanText(value).trim();
+    if (!text) return Number.NaN;
+    const numericValue = Number(text.replace(/,/g, '').replace(/%/g, '').replace(/pp/ig, '').trim());
+    return Number.isFinite(numericValue) ? numericValue : Number.NaN;
+  }
+
+  function compareNumbers(left, right) {
+    if (Number.isNaN(left) && Number.isNaN(right)) return 0;
+    if (Number.isNaN(left)) return 1;
+    if (Number.isNaN(right)) return -1;
+    return left - right;
+  }
+
+  function isSelectedSetMember(value) {
+    const normalized = cleanText(value).trim().toLowerCase();
+    return ['in', 'true', 'yes', '1', 'selected'].includes(normalized);
+  }
+
+  function collectBenchmarkValues(rows, columnIndex) {
+    const unique = new Map();
+    rows.forEach(row => {
+      const displayValue = cleanText(row[columnIndex]).trim();
+      const rateValue = parseNumber(displayValue);
+      if (!displayValue || Number.isNaN(rateValue)) return;
+      const key = rateValue.toFixed(8);
+      if (!unique.has(key)) unique.set(key, { displayValue, rateValue });
+    });
+    return [...unique.values()].sort((left, right) => left.rateValue - right.rateValue);
+  }
+
+  function mergeDataAndBenchmarks(dataRows, benchmarks) {
+    const benchmarkOrder = { peer: 0, state: 1 };
+    return [...dataRows, ...benchmarks].sort((left, right) => {
+      const rateOrder = compareNumbers(left.rateValue, right.rateValue);
+      if (rateOrder) return rateOrder;
+
+      // Put a benchmark immediately before facilities at exactly the benchmark rate.
+      if (left.type !== right.type) return left.type === 'benchmark' ? -1 : 1;
+      if (left.type === 'benchmark') {
+        return benchmarkOrder[left.kind] - benchmarkOrder[right.kind];
+      }
+      return left.values[0].localeCompare(right.values[0]);
+    });
   }
 
   function findColumnByAllowedValues(rows, allowedValues) {
@@ -301,6 +382,9 @@
       teal: rgb(8 / 255, 168 / 255, 155 / 255),
       cream: rgb(251 / 255, 248 / 255, 238 / 255),
       alternate: rgb(245 / 255, 247 / 255, 245 / 255),
+      selected: rgb(224 / 255, 243 / 255, 236 / 255),
+      peerMarker: rgb(244 / 255, 232 / 255, 213 / 255),
+      stateMarker: rgb(224 / 255, 237 / 255, 242 / 255),
       grid: rgb(213 / 255, 216 / 255, 213 / 255),
       muted: rgb(102 / 255, 107 / 255, 105 / 255),
       white: rgb(1, 1, 1)
@@ -314,7 +398,8 @@
     const contentWidth = PAGE.width - (PAGE.marginX * 2);
     const fontSize = chooseFontSize(headers.length);
     const headerFontSize = Math.max(5.6, fontSize - 0.2);
-    const columnWidths = calculatePeerColumnWidths(headers, rows, contentWidth);
+    const dataValues = rows.filter(row => row.type === 'data').map(row => row.values);
+    const columnWidths = calculatePeerColumnWidths(headers, dataValues, contentWidth);
     const pages = [];
     let page;
     let y;
@@ -414,24 +499,80 @@
       });
     }
 
+    function drawBenchmarkRow(benchmark) {
+      const rowHeight = 18;
+      const fillColor = benchmark.kind === 'state' ? palette.stateMarker : palette.peerMarker;
+      const lineColor = benchmark.kind === 'state' ? palette.navy : palette.teal;
+      const label = `${benchmark.label}  |  ${benchmark.displayValue}`;
+
+      page.drawRectangle({
+        x: PAGE.marginX,
+        y: y - rowHeight,
+        width: contentWidth,
+        height: rowHeight,
+        color: fillColor
+      });
+      page.drawLine({
+        start: { x: PAGE.marginX, y },
+        end: { x: PAGE.width - PAGE.marginX, y },
+        thickness: 1.2,
+        color: lineColor
+      });
+      page.drawLine({
+        start: { x: PAGE.marginX, y: y - rowHeight },
+        end: { x: PAGE.width - PAGE.marginX, y: y - rowHeight },
+        thickness: 1.2,
+        color: lineColor
+      });
+      page.drawText(label, {
+        x: PAGE.marginX + 6,
+        y: y - 12,
+        size: 7.2,
+        font: boldFont,
+        color: palette.navy
+      });
+      y -= rowHeight;
+    }
+
     addPage();
 
-    rows.forEach((row, rowIndex) => {
-      const rowHeight = measureRowHeight(row, columnWidths, regularFont, fontSize, 3);
+    let dataRowIndex = 0;
+    rows.forEach(row => {
+      if (row.type === 'benchmark') {
+        if (y - 18 < PAGE.marginBottom) addPage();
+        drawBenchmarkRow(row);
+        return;
+      }
+
+      const rowFont = row.selected ? boldFont : regularFont;
+      const rowHeight = measureRowHeight(row.values, columnWidths, rowFont, fontSize, 3);
       if (y - rowHeight < PAGE.marginBottom) addPage();
 
+      const rowTop = y;
       y -= drawRow({
         page,
         topY: y,
-        values: row,
+        values: row.values,
         widths: columnWidths,
-        font: regularFont,
+        font: rowFont,
         fontSize,
-        fillColor: rowIndex % 2 === 0 ? palette.cream : palette.alternate,
+        fillColor: row.selected
+          ? palette.selected
+          : (dataRowIndex % 2 === 0 ? palette.cream : palette.alternate),
         textColor: palette.navy,
         gridColor: palette.grid,
         maxLines: 3
       });
+      if (row.selected) {
+        page.drawRectangle({
+          x: PAGE.marginX,
+          y: rowTop - rowHeight,
+          width: 3,
+          height: rowHeight,
+          color: palette.teal
+        });
+      }
+      dataRowIndex += 1;
     });
 
     pages.forEach((pdfPage, pageIndex) => {

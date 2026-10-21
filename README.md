@@ -18,6 +18,9 @@ The PDF is created locally in the viewer's browser. Worksheet data is not sent t
 - Landscape letter-size pages
 - Repeating column headers
 - Alternating light table rows
+- Selected-facility rows highlighted in pale green with a teal accent
+- Facilities sorted from lowest to highest readmission rate
+- Peer-group and statewide benchmark rows inserted at their rate positions
 - IHA-style teal and navy accents
 - Automatic column sizing and wrapped text
 - Page numbers, worksheet name, and generation timestamp
@@ -37,12 +40,19 @@ The PDF includes only these fields, in this order:
 
 The value from `selected period rates label` appears as the PDF subtitle. All other worksheet fields are ignored.
 
+The worksheet must also include these fields on **Detail** (they are used for formatting and are not exported as columns):
+
+- `index_facility set`, to identify selected facilities
+- `statewide readmission rate`, to position the statewide benchmark row
+
+If the filtered data contains multiple distinct peer-group rates, the PDF inserts one peer benchmark row for each rate.
+
 ## 1. Prepare the Tableau worksheet
 
 1. Duplicate the peer comparison worksheet.
 2. Name it `Export - Full Peer Comparison`.
 3. Remove the filter that restricts the table to the seven closest facilities.
-4. Keep every field that should appear in the PDF on Rows, Columns, Text, or Detail. Tableau summary-data results include fields participating in the worksheet view.
+4. Keep every exported field on Rows, Columns, Text, or Detail. Also add `index_facility set` and `statewide readmission rate` to Detail. Tableau summary-data results include fields participating in the worksheet view.
 5. Arrange those fields in the order they should appear in the PDF.
 6. Apply the desired dashboard filters using **Apply to Worksheets > Selected Worksheets**.
 7. Add the export worksheet to the same dashboard as the extension.
